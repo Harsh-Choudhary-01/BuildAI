@@ -16,11 +16,11 @@
 		<!-- Header -->
 			<header id="header">
 				<div class="inner">
-					<a href="index.ftl" class="logo">introspect</a>
+					<a href="/" class="logo">introspect</a>
 					<nav id="nav">
-						<a href="index.ftl">Home</a>
-						<a href="generic.ftl">Generic</a>
-						<a href="elements.ftl">Elements</a>
+						<a href="/">Home</a>
+						<a href="/generic">Generic</a>
+						<a href="/elements">Elements</a>
 					</nav>
 				</div>
 			</header>
@@ -150,10 +150,10 @@
 			</section>
 
 		<!-- Scripts -->
-			<script src="../../../public/js/jquery.min.js"></script>
-			<script src="../../../public/js/skel.min.js"></script>
-			<script src="../../../public/js/util.js"></script>
-			<script src="../../../public/js/main.js"></script>
+			<script src="/js/jquery.min.js"></script>
+			<script src="/js/skel.min.js"></script>
+			<script src="/js/util.js"></script>
+			<script src="/js/main.js"></script>
 
 	</body>
 </html>
