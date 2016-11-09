@@ -27,6 +27,13 @@ public class Main
             return new ModelAndView(attributes, "index.ftl");
     }, new FreeMarkerEngine());
 
+    get("/build" , (request , response) ->
+    {
+        Map<String, Object> attributes = new HashMap<>();
+        attributes.put("message", "Hello World!");
+        return new ModelAndView(attributes , "build.ftl");
+    }, new FreeMarkerEngine());
+
     get("/generic", (request, response) ->
     {
             Map<String, Object> attributes = new HashMap<>();

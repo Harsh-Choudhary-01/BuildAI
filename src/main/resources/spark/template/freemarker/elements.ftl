@@ -18,9 +18,9 @@
 				<div class="inner">
 					<a href="/" class="logo">introspect</a>
 					<nav id="nav">
-						<a href="/">Home</a>
-						<a href="/generic">Generic</a>
-						<a href="/elements">Elements</a>
+						<a href="/build">Build</a>
+						<a href="/generic">Learn</a>
+						<a href="/elements">Username</a>
 					</nav>
 				</div>
 			</header>
@@ -144,7 +144,7 @@ print 'It took ' + i + ' iterations to sort the deck.';</code></pre>
 										<li><a href="#" class="button alt">Vertical</a></li>
 									</ul>
 								</div>
-								<div class="3u 6u$(small) 12u$(xsmall)">
+								<div class="3u 12u$(small) 12u$(xsmall)">
 									<ul class="actions vertical small">
 										<li><a href="#" class="button special small">Small</a></li>
 										<li><a href="#" class="button small">Small</a></li>

@@ -6,7 +6,7 @@
 -->
 <html>
 	<head>
-		<title>Introspect by TEMPLATED</title>
+		<title>BuildAI</title>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 		<link rel="stylesheet" type="text/css" href="css/main.css" />
@@ -16,11 +16,11 @@
 		<!-- Header -->
 			<header id="header">
 				<div class="inner">
-					<a href="/" class="logo">introspect</a>
+					<a href="/" class="logo">BuildAI</a>
 					<nav id="nav">
-						<a href="/">Home</a>
-						<a href="/generic">Generic</a>
-						<a href="/elements">Elements</a>
+						<a href="/build">Build</a>
+						<a href="/generic">Learn</a>
+						<a href="/elements">Username</a>
 					</nav>
 				</div>
 			</header>
@@ -29,8 +29,8 @@
 		<!-- Banner -->
 			<section id="banner">
 				<div class="inner">
-					<h1>Introspect: <span>A free + fully responsive<br />
-					site template by TEMPLATED</span></h1>
+					<h1>BuildAI: <span>An online machine<br />
+					learning tool and teacher</span></h1>
 					<ul class="actions">
 						<li><a href="#" class="button alt">Get Started</a></li>
 					</ul>
@@ -41,9 +41,9 @@
 			<section id="one">
 				<div class="inner">
 					<header>
-						<h2>Magna Etiam Lorem</h2>
+						<h2>No Code Required</h2>
 					</header>
-					<p>Suspendisse mauris. Fusce accumsan mollis eros. Pellentesque a diam sit amet mi ullamcorper vehicula. Integer adipiscin sem. Nullam quis massa sit amet nibh viverra malesuada. Nunc sem lacus, accumsan quis, faucibus non, congue vel, arcu, erisque hendrerit tellus. Integer sagittis. Vivamus a mauris eget arcu gravida tristique. Nunc iaculis mi in ante.</p>
+					<p>Our online tool has built in features for data processing, reading, and storing. Simply choose or load your training data, set up an algorithim of choice, and use the trained program through a simple interface. All without any code.</p>
 					<ul class="actions">
 						<li><a href="#" class="button alt">Learn More</a></li>
 					</ul>
@@ -56,23 +56,23 @@
 					<article>
 						<div class="content">
 							<header>
-								<h3>Pellentesque adipis</h3>
+								<h3>Powerful Data Tools</h3>
 							</header>
 							<div class="image fit">
 								<img src="images/pic01.jpg" alt="" />
 							</div>
-							<p>Cumsan mollis eros. Pellentesque a diam sit amet mi magna ullamcorper vehicula. Integer adipiscin sem. Nullam quis massa sit amet lorem ipsum feugiat tempus.</p>
+							<p>Our data tools include advanced reading capabilities for most files extensions including CSV and TXT. In addition we also offer tools for automatically fetching data from databases or even user defined websites. With these tools there is never a problem collecting and using data properly for your machine learning programs.</p>
 						</div>
 					</article>
 					<article class="alt">
 						<div class="content">
 							<header>
-								<h3>Morbi interdum mol</h3>
+								<h3>Machine Learning Course</h3>
 							</header>
 							<div class="image fit">
 								<img src="images/pic02.jpg" alt="" />
 							</div>
-							<p>Cumsan mollis eros. Pellentesque a diam sit amet mi magna ullamcorper vehicula. Integer adipiscin sem. Nullam quis massa sit amet lorem ipsum feugiat tempus.</p>
+							<p>In addition to our online services for training machine learning programs we also offer an interactive course to get anyone up to speed on machine learning and how to utilitize it effectively. This course is ideal for people of all skill level with a variety of tracks to complete.</p>
 						</div>
 					</article>
 				</div>

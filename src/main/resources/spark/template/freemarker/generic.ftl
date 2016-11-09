@@ -18,9 +18,9 @@
 				<div class="inner">
 					<a href="/" class="logo">introspect</a>
 					<nav id="nav">
-						<a href="/">Home</a>
-						<a href="/generic">Generic</a>
-						<a href="/elements">Elements</a>
+						<a href="/build">Build</a>
+						<a href="/generic">Learn</a>
+						<a href="/elements">Username</a>
 					</nav>
 				</div>
 			</header>
