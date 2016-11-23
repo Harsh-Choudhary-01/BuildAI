@@ -32,7 +32,7 @@
 					<h1>BuildAI: <span>An online machine<br />
 					learning tool and teacher</span></h1>
 					<ul class="actions">
-						<li><a href="#" class="button alt">Get Started</a></li>
+						<li><a href="#signup" class="button alt signup">Get Started</a></li>
 					</ul>
 				</div>
 			</section>
@@ -154,6 +154,32 @@
 			<script src="js/skel.min.js"></script>
 			<script src="js/util.js"></script>
 			<script src="js/main.js"></script>
-
+    		<script src="https://cdn.auth0.com/js/lock/10.0/lock.min.js"></script>
+    		<script>
+    			$(document).ready(function()
+    			{
+    				$('.signup').click(function()
+    				{
+    					doSignup();
+    				});
+    			});
+    			function doSignup() {
+    				var lock = new Auth0Lock('${clientId}', '${clientDomain}', {
+    					auth: {
+    						redirectUrl: 'localhost:5000' + '/build',
+    						responseType: 'code',
+    						params: {
+    						
+                        // Learn about scopes: https://auth0.com/docs/scopes
+                        scope: 'openid user_id name nickname email picture'
+                    }
+                }
+            });
+            // delay to allow welcome message..
+            setTimeout(function () {
+            	lock.show();
+            }, 1500);
+        }
+    </script>
 	</body>
 </html>

@@ -27,21 +27,33 @@
         <h1>Projects</h1>
         <section>
           <div class="row">
-            <div class="7u 12u$(xsmall)">
-              <ul class="alt">
-                <li><a href="#test">Project 1</a></li>
-                <li>Project 2</li>
-                <li>Project 3</li>
-              </ul>
-            </div>
-            <div class="-1u 3u 12u$(xsmall)" style="text-align: center ! important;">
-              <strong>No Projects?</strong>
-              <ul class="actions vertical">
-                <li><a href="#" class="button special">Create New Project</a></li>
-              </ul>
-            </div>
+            <#if projects?size != 0>
+              <div class="7u 12u$(xsmall)">
+                <ul class="alt">
+                  <#list projects as x>
+                    <li><a href="#${projectHashes[x?counter - 1]}">${x}</a></li>
+                  </#list>
+                </ul>
+              </div>
+              <div class="-1u 3u 12u$(xsmall)" style="text-align: center">
+                <ul class="actions vertical">
+                  <li><a href="#new" class="button special">Create New Project</a></li>
+                </ul>
+              </div>
+            </#if>
+            <#if projects?size == 0>
+              <div class="12u 12u$(xsmall)" style="text-align: center">
+                <strong>No Projects?</strong>
+                <ul class="actions vertical">
+                  <li><a href="#new" class="button special">Create New Project</a></li>
+                </ul>
+              </div>
+          </#if>
           </div>
         </section>
       </div>
     </section>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script src="js/project.js"></script>
+  </body>
 </html>

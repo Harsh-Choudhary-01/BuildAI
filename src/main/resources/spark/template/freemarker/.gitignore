@@ -1,9 +1,0 @@
-*~
-target
-.env
-.idea/
-*.iml
-css
-fonts
-images
-js
