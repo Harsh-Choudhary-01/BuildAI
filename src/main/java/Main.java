@@ -1,3 +1,4 @@
+import java.security.Principal;
 import java.sql.*;
 import java.util.HashMap;
 import java.util.ArrayList;
@@ -8,6 +9,7 @@ import java.net.URISyntaxException;
 import static spark.Spark.*;
 
 import com.auth0.NonceUtils;
+import com.auth0.jwt.internal.org.apache.commons.lang3.SystemUtils;
 import spark.template.freemarker.FreeMarkerEngine;
 import spark.ModelAndView;
 import static spark.Spark.get;
@@ -44,7 +46,7 @@ public class Main
 
     get("/build" , (request , response) ->
     {
-        NonceUtils.addNonceToStorage(request.raw());
+        //NonceUtils.addNonceToStorage(request.raw());
         ArrayList<String> projects = new ArrayList<>();
         ArrayList<String> projectHashes = new ArrayList<>();
         projects.add("Project X");
@@ -55,9 +57,15 @@ public class Main
             projectHashes.add(projects.get(i).replaceAll("\\s" , ""));
         }
         Map<String, Object> attributes = new HashMap<>();
-        //Auth0User user = request.session().attribute("AUTH0_USER");
-        //Auth0User user1 = SessionUtils.getAuth0User(request.raw());
-        Auth0User user = (Auth0User) request.raw().getUserPrincipal();
+        Auth0User user = (Auth0User) request.session().attribute("auth0User");
+        Auth0User user1 = SessionUtils.getAuth0User(request.raw());
+        Principal user2 = request.raw().getUserPrincipal();
+        if(user == null)
+            System.out.println("User Null");
+        if(user1 == null)
+            System.out.println("User 1 Null");
+        if(user2 == null)
+            System.out.println("User 2 Null");
         if(user != null) {
             attributes.put("userString" , user.toString());
             attributes.put("user", user);
