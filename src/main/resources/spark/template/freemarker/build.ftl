@@ -14,8 +14,12 @@
         <a href="/" class="logo">BuildAI</a>
         <nav id="nav">
           <a href="/build">Build</a>
-          <a href="/generic">Learn</a>
-          <a href="/elements">Username</a>
+          <a href="/generic">Learn: ${loggedIn?c}</a>
+          <#if loggedIn>
+            <a href="/elements">${user.nickname}</a>
+          <#else>
+            <a href="#signup" class="signup">Login</a>
+          </#if>
         </nav>
       </div>
     </header>
@@ -55,5 +59,29 @@
     </section>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
     <script src="js/project.js"></script>
+<!--     <script src="https://cdn.auth0.com/js/lock/10.0/lock.min.js"></script>
+    <script>
+      var lock = new Auth0Lock('${clientId}', '${clientDomain}', {
+        auth: {
+          redirectUrl: 'http://localhost:5000/build',
+          responseType: 'code',
+          params: {
+                  scope: 'openid user_id name nickname email picture'
+                }
+            }
+          });
+
+      $(document).ready(function()
+      {
+        $('.signup').click(function()
+        {
+          doSignup();
+        });
+      });
+
+      function doSignup() {
+              lock.show();
+        }
+    </script> -->
   </body>
 </html>
