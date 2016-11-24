@@ -23,6 +23,7 @@ public class Main
 {
   public static void main(String[] args)
   {
+      System.out.println("Hi");
     port(Integer.valueOf(System.getenv("PORT")));
     staticFileLocation("/spark/template/freemarker");
       String clientId = System.getenv("AUTH0_CLIENT_ID");

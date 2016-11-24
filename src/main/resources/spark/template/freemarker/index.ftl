@@ -155,7 +155,7 @@
 	<script>
 		var lock = new Auth0Lock('${clientId}', '${clientDomain}', {
 			auth: {
-				redirectUrl: 'http://localhost:5000/build',
+				redirectUrl: 'http://buildai.net/build',
 				responseType: 'code',
 				params: {
                 scope: 'openid user_id name nickname email picture'
