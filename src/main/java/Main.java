@@ -1,53 +1,90 @@
-import java.security.Principal;
-import java.sql.*;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.Map;
-import java.net.URI;
-import java.net.URISyntaxException;
-
 import static spark.Spark.*;
 
-import com.auth0.NonceUtils;
-import com.auth0.jwt.internal.org.apache.commons.lang3.SystemUtils;
+import com.auth0.Auth0User;
+import com.auth0.jwt.JWTVerifier;
+import com.auth0.jwt.JWTVerifyException;
+import com.auth0.jwt.internal.org.apache.commons.lang3.exception.ExceptionContext;
 import spark.template.freemarker.FreeMarkerEngine;
 import spark.ModelAndView;
 import static spark.Spark.get;
-
-import com.auth0.Auth0User;
-import com.auth0.SessionUtils;
-
 import com.heroku.sdk.jdbc.DatabaseUrl;
-
 public class Main
 {
   public static void main(String[] args)
   {
       System.out.println("Hi");
-    port(Integer.valueOf(System.getenv("PORT")));
-    staticFileLocation("/spark/template/freemarker");
+      port(Integer.valueOf(System.getenv("PORT")));
+      staticFileLocation("/spark/template/freemarker");
       String clientId = System.getenv("AUTH0_CLIENT_ID");
       String clientDomain = System.getenv("AUTH0_DOMAIN");
     get("/", (request, response) ->
     {
-        NonceUtils.addNonceToStorage(request.raw());
         Map<String, Object> attributes = new HashMap<>();
-        attributes.put("message", "Hello World!");
-        Auth0User user = SessionUtils.getAuth0User(request.raw()); //TODO: verify user with database
-        if(user != null) {
-            attributes.put("user", user);
-            attributes.put("loggedIn" , true);
+        Map<String , Object> user = new HashMap<>();
+        String token = request.queryParams("token");
+        if(token == null) {
+            if(request.session().attribute("token") == null)
+            {
+                attributes.put("loggedIn", false);
+                System.out.println("auth is null");
+            }
+            else
+            {
+                user = checkToken(request.session().attribute("token"));
+                if(user.containsKey("loggedIn")) {
+                    attributes.put("user", user.get("claims"));
+                    attributes.put("loggedIn", true);
+                }
+                else
+                    attributes.put("loggedIn", false);
+            }
         }
-        else
-            attributes.put("loggedIn" , false);
+        else {
+            if(request.session().attribute("token") == null)
+                request.session().attribute("token" , token);
+            user = checkToken(token);
+            if(user.containsKey("loggedIn")) {
+                attributes.put("user", user.get("claims"));
+                attributes.put("loggedIn", true);
+            }
+            else
+                attributes.put("loggedIn", false);
+        }
         attributes.put("clientId" , clientId);
         attributes.put("clientDomain" , clientDomain);
         return new ModelAndView(attributes, "index.ftl");
     }, new FreeMarkerEngine());
 
+    before("/login" ,  (request, response) ->
+    {
+        final String jwt = request.queryParams("token");
+        request.session().attribute("jwt" , jwt);
+        final String secret = System.getenv("AUTH0_CLIENT_SECRET");
+        final byte[] decodedSecret = Base64.getUrlDecoder().decode(secret);
+        try
+        {
+            final JWTVerifier verifier = new JWTVerifier(decodedSecret);
+            final Map<String , Object> claims = verifier.verify(jwt);
+            request.session().attribute("user" , claims);
+        }
+        catch (Exception e)
+        {
+            System.out.println("Invalid token");
+        }
+        if(request.queryParams("url") != null)
+            response.redirect("/" + request.queryParams("url"));
+        else
+            response.redirect("/build");
+    });
     get("/build" , (request , response) ->
     {
-        //NonceUtils.addNonceToStorage(request.raw());
+        Map<String, Object> attributes = new HashMap<>();
+        Map<String , Object> user = new HashMap<>();
+        String token = request.queryParams("token");
         ArrayList<String> projects = new ArrayList<>();
         ArrayList<String> projectHashes = new ArrayList<>();
         projects.add("Project X");
@@ -55,28 +92,38 @@ public class Main
         projects.add("Project Z");
         for(int i = 0; i < projects.size(); i++)
         {
-            projectHashes.add(projects.get(i).replaceAll("\\s" , ""));
+            projectHashes.add(projects.get(i).replaceAll("\\s" , "").toLowerCase());
         }
-        Map<String, Object> attributes = new HashMap<>();
-        Auth0User user = (Auth0User) request.session().attribute("auth0User");
-        Auth0User user1 = SessionUtils.getAuth0User(request.raw());
-        Principal user2 = request.raw().getUserPrincipal();
-        if(user == null)
-            System.out.println("User Null");
-        if(user1 == null)
-            System.out.println("User 1 Null");
-        if(user2 == null)
-            System.out.println("User 2 Null");
-        if(user != null) {
-            attributes.put("userString" , user.toString());
-            attributes.put("user", user);
-            attributes.put("loggedIn" , true);
+        if(token == null) {
+            if(request.session().attribute("token") == null)
+            {
+                attributes.put("loggedIn", false);
+                System.out.println("auth is null");
+            }
+            else
+            {
+                if(request.session().attribute("token") == null)
+                    request.session().attribute("token" , token);
+                user = checkToken(request.session().attribute("token"));
+                if(user.containsKey("loggedIn")) {
+                    attributes.put("user", user.get("claims"));
+                    attributes.put("loggedIn", true);
+                }
+                else
+                    attributes.put("loggedIn", false);
+            }
         }
-        else
-            attributes.put("loggedIn" , false);
+        else {
+            user = checkToken(token);
+            if(user.containsKey("loggedIn")) {
+                attributes.put("user", user.get("claims"));
+                attributes.put("loggedIn", true);
+            }
+            else
+                attributes.put("loggedIn", false);
+        }
         attributes.put("clientId" , clientId);
         attributes.put("clientDomain" , clientDomain);
-        attributes.put("message", "Hello World!");
         attributes.put("projectHashes" , projectHashes);
         attributes.put("projects" , projects);
         return new ModelAndView(attributes , "build.ftl");
@@ -98,5 +145,24 @@ public class Main
             return new ModelAndView(attributes, "elements.ftl");
     }, new FreeMarkerEngine());
 
+  }
+  static Map<String , Object> checkToken(String token)
+  {
+      Map<String , Object> values = new HashMap<>();
+      final String secret = System.getenv("AUTH0_CLIENT_SECRET");
+      final byte[] decodedSecret = Base64.getUrlDecoder().decode(secret);
+      try
+      {
+          final JWTVerifier verifier = new JWTVerifier(decodedSecret);
+          final Map<String , Object> claims = verifier.verify(token);
+          values.put("loggedIn" , true);
+          values.put("claims" , claims);
+          return  values;
+      }
+      catch (Exception e)
+      {
+          System.out.println("Invalid token");
+          return values;
+      }
   }
 }

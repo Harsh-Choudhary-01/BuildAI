@@ -5,20 +5,27 @@
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 	<link rel="stylesheet" type="text/css" href="css/main.css" />
+	<script type="text/javascript">
+      var uri = window.location.toString();
+      if (uri.indexOf("?") > 0) {
+        var clean_uri = uri.substring(0, uri.indexOf("?"));
+        window.history.replaceState({}, document.title, clean_uri);
+      }
+    </script>
 </head>
 <body>
 	<!-- Header -->
 	<header id="header">
 		<div class="inner">
-			<a href="/" class="logo">BuildAI</a>
+			<a href="/" class="logo link">BuildAI</a>
 			<nav id="nav">
-				<a href="/build">Build</a>
-				<a href="/generic">Learn</a>
-				<#if !loggedIn>
-					<a href="#signup" class="signup">Login</a>
-				<#else>
-					<a href="/elements">${user.nickname}</a>
-				</#if>
+				<a href="/build" class="link">Build</a>
+				<a href="/generic" class="link">Learn</a>
+				<#if loggedIn>
+            		<a href="/profile" class="username link">${user.nickname}</a>
+          		<#else>
+            		<a href="#" class="signup username">Login</a>
+          		</#if>
 			</nav>
 		</div>
 	</header>
@@ -29,7 +36,11 @@
 			<h1>BuildAI: <span>An online machine<br />
 				learning tool and teacher</span></h1>
 				<ul class="actions">
-					<li><a href="#signup" class="button alt signup">Get Started</a></li>
+					<#if !loggedIn>
+						<li><a href="#signup" class="button alt signup">Get Started</a></li>
+					<#else>
+						<li><a href="/build" class="button alt link">Get Started</a></li>
+					</#if>
 				</ul>
 			</div>
 		</section>
@@ -152,28 +163,34 @@
 	<script src="js/util.js"></script>
 	<script src="js/main.js"></script>
 	<script src="https://cdn.auth0.com/js/lock/10.0/lock.min.js"></script>
-	<script>
-		var lock = new Auth0Lock('${clientId}', '${clientDomain}', {
-			auth: {
-				redirectUrl: 'http://buildai.net/build',
-				responseType: 'code',
-				params: {
-                scope: 'openid user_id name nickname email picture'
-            	}
-	        }
-        });
-
-		$(document).ready(function()
-		{
-			$('.signup').click(function()
-			{
-				doSignup();
-			});
-		});
-
-		function doSignup() {
-            lock.show();
-    	}
-	</script>
+    <script>
+    	$(function()
+    	{
+    		$('.link').each(function()
+      		{
+      			$(this).attr('href' , this.href + "?token=" + localStorage.getItem('id_token'));
+      		});
+    	});
+      $(document).ready(function()
+      {
+        if(!${loggedIn?c}) {
+        	var lock = new Auth0Lock('${clientId}', '${clientDomain}', {
+	            auth: {
+	              params: {
+	                scope: 'openid user_id name nickname email picture'
+	              }
+	            }
+        	});
+        	$('.signup').click(function(e) {
+            	e.preventDefault();
+            	lock.show();
+        	});
+        	lock.on("authenticated", function(authResult) {
+              localStorage.setItem('id_token', authResult.idToken);
+              window.location.href = "/build?token=" + authResult.idToken;
+        	});
+        }
+      });
+    </script>
 </body>
 </html>

@@ -6,19 +6,26 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
     <link rel="stylesheet" type="text/css" href="css/main.css" />
+    <script type="text/javascript">
+      var uri = window.location.toString();
+      if (uri.indexOf("?") > 0) {
+        var clean_uri = uri.substring(0, uri.indexOf("?"));
+        window.history.replaceState({}, document.title, clean_uri);
+      }
+    </script>
   </head>
   <body>
 
     <header id = "header">
       <div class="inner">
-        <a href="/" class="logo">BuildAI</a>
+        <a href="/" class="logo link">BuildAI</a>
         <nav id="nav">
-          <a href="/build">Build</a>
-          <a href="/generic">Learn: ${loggedIn?c}</a>
+          <a href="/build" class="link">Build</a>
+          <a href="/generic">Learn</a>
           <#if loggedIn>
-            <a href="/elements">${user.nickname}</a>
+            <a href="/profile" class="username link">${user.nickname}</a>
           <#else>
-            <a href="#signup" class="signup">Login</a>
+            <a href="#" class="signup username">Login</a>
           </#if>
         </nav>
       </div>
@@ -59,29 +66,35 @@
     </section>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
     <script src="js/project.js"></script>
-<!--     <script src="https://cdn.auth0.com/js/lock/10.0/lock.min.js"></script>
+    <script src="https://cdn.auth0.com/js/lock/10.0/lock.min.js"></script>
     <script>
-      var lock = new Auth0Lock('${clientId}', '${clientDomain}', {
-        auth: {
-          redirectUrl: 'http://localhost:5000/build',
-          responseType: 'code',
-          params: {
-                  scope: 'openid user_id name nickname email picture'
-                }
-            }
+      $(function()
+      {
+        $('.link').each(function()
+          {
+            $(this).attr('href' , this.href + "?token=" + localStorage.getItem('id_token'));
           });
-
+      });
       $(document).ready(function()
       {
-        $('.signup').click(function()
-        {
-          doSignup();
-        });
-      });
-
-      function doSignup() {
+        if(!${loggedIn?c}) {
+          var lock = new Auth0Lock('${clientId}', '${clientDomain}', {
+              auth: {
+                params: {
+                  scope: 'openid user_id name nickname email picture'
+                }
+              }
+          });
+          $('.signup').click(function(e) {
+              e.preventDefault();
               lock.show();
+          });
+          lock.on("authenticated", function(authResult) {
+              localStorage.setItem('id_token', authResult.idToken);
+              window.location.href = "/build?token=" + authResult.idToken;
+          });
         }
-    </script> -->
+      });
+    </script>
   </body>
 </html>
