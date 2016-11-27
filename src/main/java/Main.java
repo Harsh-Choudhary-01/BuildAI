@@ -126,9 +126,8 @@ public class Main
       Map<String, Object> attributes = new HashMap<>();
       Map<String , Object> user;
       String token = request.queryParams("token");
-      ArrayList<String> projects = new ArrayList<>();
+      String[] projects = new String[1];
       ArrayList<String> projectNames = new ArrayList<>();
-      ArrayList<String> projectHashes;
       if(token == null) {
           if(request.session().attribute("token") == null)
           {
@@ -178,18 +177,21 @@ public class Main
                           "' WHERE userID = '" + userInfo.get("user_id") + "'");
               }
               ResultSet rs = stmt.executeQuery("SELECT userProjects FROM users WHERE userID = '" + userInfo.get("user_id") + "'");
+
               while(rs.next())
               {
-                  projects = (ArrayList<String>) rs.getArray("userProjects").getArray();
+                  Array project = rs.getArray("userProjects");
+                  projects = (String[]) project.getArray() ;
               }
-              for(int i = 0; i < projects.size() ; i ++)
+              for(int i = 0; i < projects.length ; i ++)
               {
-                  rs = stmt.executeQuery("SELECT projectName from projects WHERE projectID = '" + projects.get(i) + "'");
+                  rs = stmt.executeQuery("SELECT projectName from projects WHERE projectID = '" + projects[i] + "'");
                   while (rs.next())
                   {
                       projectNames.add(rs.getString("projectName"));
                   }
               }
+
           }
           catch (Exception e)
           {
@@ -203,10 +205,10 @@ public class Main
       //{
       //    projectHashes.add(projects.get(i).replaceAll("\\s" , "").toLowerCase());
       //}
-      projectHashes = projects;
+
       attributes.put("clientId" , clientId);
       attributes.put("clientDomain" , clientDomain);
-      attributes.put("projectHashes" , projectHashes);
+      attributes.put("projectHashes" , projects);
       attributes.put("projects" , projectNames);
       return new ModelAndView(attributes , "build.ftl");
   }
