@@ -183,6 +183,7 @@ public class Main
                   Array project = rs.getArray("userProjects");
                   projects = (String[]) project.getArray() ;
               }
+              System.out.println("Project array before for" + projects.toString());
               for(int i = 0; i < projects.length ; i ++)
               {
                   rs = stmt.executeQuery("SELECT projectName from projects WHERE projectID = '" + projects[i] + "'");
@@ -205,7 +206,10 @@ public class Main
       //{
       //    projectHashes.add(projects.get(i).replaceAll("\\s" , "").toLowerCase());
       //}
-
+      if(projects != null) {
+          System.out.println("Project ID Array:  " + projects.toString());
+          System.out.println("Project NAme array: " + projectNames.toString());
+      }
       attributes.put("clientId" , clientId);
       attributes.put("clientDomain" , clientDomain);
       attributes.put("projectHashes" , projects);
