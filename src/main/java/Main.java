@@ -149,6 +149,7 @@ public class Main
       else {
           user = checkToken(token);
           if(user.containsKey("loggedIn")) {
+              request.session().attribute("token" , token);
               attributes.put("user", user.get("claims"));
               attributes.put("loggedIn", true);
           }
@@ -165,10 +166,14 @@ public class Main
               if(newProjectName != null)
               {
                   stmt.executeUpdate("CREATE TABLE IF NOT EXISTS users (userID text , projects text[])");
+                  System.out.println("1 ex done");
                   String newID = newID();
                   stmt.executeUpdate("INSERT INTO users (userID , projects) VALUES ('" + userInfo.get("user_id") + "' , '" + newID + "') ON CONFLICT(userID) DO UPDATE SET projects[array_length(projects, 1) + 1] = '" + newID + "'");
+                  System.out.println("2 ex done");
                   stmt.executeUpdate("CREATE TABLE IF NOT EXISTS projects (projectID text , description text , projectName text)");
+                  System.out.println("3 ex done");
                   stmt.executeUpdate("INSERT INTO projects (projectID , description , projectName) VALUES ('" + newID + "' , '" + newProjectDesc + "' , '" + newProjectName + "')");
+                  System.out.println("4 ex done");
                   stmt.executeUpdate("UPDATE users SET projects[array_length(projects, 1) + 1] = '" + newID +
                           "' WHERE userID = '" + userInfo.get("user_id") + "'");
               }
