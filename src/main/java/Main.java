@@ -180,7 +180,7 @@ public class Main
               ResultSet rs = stmt.executeQuery("SELECT userProjects FROM users WHERE userID = '" + userInfo.get("user_id") + "'");
               while(rs.next())
               {
-                  projects = (ArrayList<String>) rs.getArray("projects").getArray();
+                  projects = (ArrayList<String>) rs.getArray("userProjects").getArray();
               }
               for(int i = 0; i < projects.size() ; i ++)
               {
