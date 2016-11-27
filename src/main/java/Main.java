@@ -168,7 +168,7 @@ public class Main
                   stmt.executeUpdate("CREATE TABLE IF NOT EXISTS users (userID text , projects text[])");
                   System.out.println("1 ex done");
                   String newID = newID();
-                  stmt.executeUpdate("INSERT INTO users (userID , projects) VALUES ('" + userInfo.get("user_id") + "' , '{" + newID + "}') ON CONFLICT(userID) DO UPDATE SET users.projects[array_length(projects, 1) + 1] = '" + newID + "'");
+                  stmt.executeUpdate("INSERT INTO users AS u (userID , projects) VALUES ('" + userInfo.get("user_id") + "' , '{" + newID + "}') ON CONFLICT(userID) DO UPDATE SET u.projects[array_length(projects, 1) + 1] = '" + newID + "'");
                   System.out.println("2 ex done");
                   stmt.executeUpdate("CREATE TABLE IF NOT EXISTS projects (projectID text , description text , projectName text)");
                   System.out.println("3 ex done");
