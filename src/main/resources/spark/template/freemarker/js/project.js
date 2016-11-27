@@ -6,5 +6,11 @@ $(document).ready(function()
 function processHash()
 {
 	var hash = window.location.hash;
-	
+	if(hash === '#new')
+	{
+		$('.listHeader').fadeOut();
+		$('.newHeader').fadeIn();
+		$('div.projectList').fadeOut("fast");
+		$('.newProjectForm').fadeIn();
+	}
 }

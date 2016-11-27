@@ -34,10 +34,11 @@
 
     <!--List of the projects  -->
     <section id="main">
-      <div class="inner">
-        <h1>Projects</h1>
+      <div class="inner relativePos">
+        <h1 class="listHeader">Projects</h1>
+        <h1 class="newHeader hidden">Project Details</h1>
         <section>
-          <div class="row">
+          <div class="row projectList">
             <#if projects?size != 0>
               <div class="7u 12u$(xsmall)">
                 <ul class="alt">
@@ -59,7 +60,24 @@
                   <li><a href="#new" class="button special">Create New Project</a></li>
                 </ul>
               </div>
-          </#if>
+            </#if>
+          </div>
+          <div class="newProjectForm hidden">
+            <form method="post" action="/build">
+              <div class="row uniform">
+                <div class="12u$">
+                  <input type="text" name="project-name" id="project-name" value="" placeholder="Project Name"/>
+                </div>
+                <div class="12u$">
+                  <textarea name="project-description" id="project-description" placeholder="Project Description" rows="3" maxlength="500"></textarea>
+                </div>
+                <div class="12u$">
+                  <ul class="actions">
+                    <li><input type="submit" value="Create Project" class="special" /></li>
+                  </ul>
+                </div>
+              </div>
+            </form>
           </div>
         </section>
       </div>
