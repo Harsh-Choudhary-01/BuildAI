@@ -165,10 +165,10 @@ public class Main
               Map<String, Object> userInfo = (Map<String , Object>)attributes.get("user");
               if(newProjectName != null)
               {
-                  stmt.executeUpdate("CREATE TABLE IF NOT EXISTS users (userID text , userProjects text[] , CONSTRAINT user_list UNIQUE(user_id))");
+                  stmt.executeUpdate("CREATE TABLE IF NOT EXISTS users (userID text , userProjects text[] , CONSTRAINT user_list UNIQUE(userId))");
                   System.out.println("1 ex done");
                   String newID = newID();
-                  stmt.executeUpdate("INSERT INTO users(userID , userProjects) VALUES ('" + userInfo.get("user_id") + "' , '{" + newID + "}') ON CONFLICT(user_list) DO UPDATE SET userProjects[array_length(userProjects, 1) + 1] = '" + newID + "'");
+                  stmt.executeUpdate("INSERT INTO users(userID , userProjects) VALUES ('" + userInfo.get("user_id") + "' , '{" + newID + "}') ON CONFLICT(userID) DO UPDATE SET userProjects[array_length(userProjects, 1) + 1] = '" + newID + "'");
                   System.out.println("2 ex done");
                   stmt.executeUpdate("CREATE TABLE IF NOT EXISTS projects (projectID text , description text , projectName text)");
                   System.out.println("3 ex done");
