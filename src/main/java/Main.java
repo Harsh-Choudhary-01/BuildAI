@@ -165,19 +165,19 @@ public class Main
               Map<String, Object> userInfo = (Map<String , Object>)attributes.get("user");
               if(newProjectName != null)
               {
-                  stmt.executeUpdate("CREATE TABLE IF NOT EXISTS users (userID text , projects text[])");
+                  stmt.executeUpdate("CREATE TABLE IF NOT EXISTS users (userID text , userProjects text[])");
                   System.out.println("1 ex done");
                   String newID = newID();
-                  stmt.executeUpdate("INSERT INTO users AS u (u.userID , u.projects) VALUES ('" + userInfo.get("user_id") + "' , '{" + newID + "}') ON CONFLICT(userID) DO UPDATE SET u.projects[array_length(u.projects, 1) + 1] = '" + newID + "'");
+                  stmt.executeUpdate("INSERT INTO users(userID , userProjects) VALUES ('" + userInfo.get("user_id") + "' , '{" + newID + "}') ON CONFLICT(userID) DO UPDATE SET userProjects[array_length(userProjects, 1) + 1] = '" + newID + "'");
                   System.out.println("2 ex done");
                   stmt.executeUpdate("CREATE TABLE IF NOT EXISTS projects (projectID text , description text , projectName text)");
                   System.out.println("3 ex done");
                   stmt.executeUpdate("INSERT INTO projects (projectID , description , projectName) VALUES ('" + newID + "' , '" + newProjectDesc + "' , '" + newProjectName + "')");
                   System.out.println("4 ex done");
-                  stmt.executeUpdate("UPDATE users SET projects[array_length(projects, 1) + 1] = '" + newID +
+                  stmt.executeUpdate("UPDATE users SET userProjects[array_length(userProjects, 1) + 1] = '" + newID +
                           "' WHERE userID = '" + userInfo.get("user_id") + "'");
               }
-              ResultSet rs = stmt.executeQuery("SELECT projects FROM users WHERE userID = '" + userInfo.get("user_id") + "'");
+              ResultSet rs = stmt.executeQuery("SELECT userProjects FROM users WHERE userID = '" + userInfo.get("user_id") + "'");
               while(rs.next())
               {
                   projects = (ArrayList<String>) rs.getArray("projects").getArray();
