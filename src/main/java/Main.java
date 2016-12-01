@@ -119,6 +119,7 @@ public class Main
   }
   static ModelAndView processBuildPage(Request request ,  Response response)
   {
+      System.out.println("Processed Build Page");
       Connection connection = null;
       String newProjectName = request.queryParams("project-name"); //TODO: handle same project names
       String newProjectDesc = request.queryParams("project-description");
@@ -173,11 +174,8 @@ public class Main
                   System.out.println("3 ex done");
                   stmt.executeUpdate("INSERT INTO projects (projectID , description , projectName) VALUES ('" + newID + "' , '" + newProjectDesc + "' , '" + newProjectName + "')");
                   System.out.println("4 ex done");
-                  stmt.executeUpdate("UPDATE users SET userProjects[array_length(userProjects, 1) + 1] = '" + newID +
-                          "' WHERE userID = '" + userInfo.get("user_id") + "'");
               }
               ResultSet rs = stmt.executeQuery("SELECT userProjects FROM users WHERE userID = '" + userInfo.get("user_id") + "'");
-
               while(rs.next())
               {
                   Array project = rs.getArray("userProjects");
@@ -190,6 +188,7 @@ public class Main
                   while (rs.next())
                   {
                       projectNames.add(rs.getString("projectName"));
+                      System.out.println("Added project name for id: " + projects[i]);
                   }
               }
 
@@ -209,6 +208,7 @@ public class Main
       if(projects != null) {
           System.out.println("Project ID Array:  " + projects.toString());
           System.out.println("Project NAme array: " + projectNames.toString());
+          System.out.println("Project Debug length: " + projects.length);
       }
       attributes.put("clientId" , clientId);
       attributes.put("clientDomain" , clientDomain);
