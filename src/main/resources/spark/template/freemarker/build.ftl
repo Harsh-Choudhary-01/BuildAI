@@ -43,7 +43,7 @@
               <div class="7u 12u$(xsmall)">
                 <ul class="alt">
                   <#list projects as x>
-                    <li><a href="#${projectHashes[x?counter - 1]}">${x}</a></li>
+                    <li><a href="#${projectHashes[x?counter - 1]}" class="link">${x}</a></li>
                   </#list>
                 </ul>
               </div>
@@ -55,10 +55,16 @@
             </#if>
             <#if projects?size == 0>
               <div class="12u 12u$(xsmall)" style="text-align: center">
-                <strong>No Projects?</strong>
-                <ul class="actions vertical">
-                  <li><a href="#new" class="button special">Create New Project</a></li>
-                </ul>
+                <#if loggedIn>
+                  <strong>No Projects?</strong>
+                  <ul class="actions vertical">
+                    <li><a href="#new" class="button special">Create New Project</a></li>
+                  </ul>
+                <#else>
+                  <ul class="actions vertical">
+                    <li><a href="#" class="button special signup">Please Log In</a></li>
+                  </ul>
+                </#if>
               </div>
             </#if>
           </div>
@@ -66,10 +72,10 @@
             <form method="post" action="/build">
               <div class="row uniform">
                 <div class="12u$">
-                  <input type="text" name="project-name" id="project-name" value="" placeholder="Project Name"/>
+                  <input type="text" name="project-name" id="project-name" value="" required placeholder="Project Name"/>
                 </div>
                 <div class="12u$">
-                  <textarea name="project-description" id="project-description" placeholder="Project Description" rows="3" maxlength="500"></textarea>
+                  <textarea name="project-description" id="project-description" placeholder="Project Description" rows="3" maxlength="500" required></textarea>
                 </div>
                 <div class="12u$">
                   <ul class="actions">

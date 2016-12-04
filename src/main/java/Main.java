@@ -12,6 +12,7 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.JWTVerifyException;
 import com.auth0.jwt.internal.org.apache.commons.lang3.exception.ExceptionContext;
 import com.auth0.jwt.internal.org.bouncycastle.crypto.tls.ConnectionEnd;
+import freemarker.ext.beans.HashAdapter;
 import spark.Request;
 import spark.Response;
 import spark.template.freemarker.FreeMarkerEngine;
@@ -29,66 +30,22 @@ public class Main
       System.out.println("Hi");
       port(Integer.valueOf(System.getenv("PORT")));
       staticFileLocation("/spark/template/freemarker");
-
     get("/", (request, response) ->
     {
         Map<String, Object> attributes = new HashMap<>();
         Map<String , Object> user = new HashMap<>();
-        String token = request.queryParams("token");
-        if(token == null) {
-            if(request.session().attribute("token") == null)
-            {
-                attributes.put("loggedIn", false);
-                System.out.println("auth is null");
-            }
-            else
-            {
-                user = checkToken(request.session().attribute("token"));
-                if(user.containsKey("loggedIn")) {
-                    attributes.put("user", user.get("claims"));
-                    attributes.put("loggedIn", true);
-                }
-                else
-                    attributes.put("loggedIn", false);
-            }
-        }
-        else {
-            if(request.session().attribute("token") == null)
-                request.session().attribute("token" , token);
-            user = checkToken(token);
-            if(user.containsKey("loggedIn")) {
-                attributes.put("user", user.get("claims"));
-                attributes.put("loggedIn", true);
-            }
-            else
-                attributes.put("loggedIn", false);
-        }
+        user = getUser(request);
+        attributes.put("user" , user.get("claims"));
+        attributes.put("loggedIn" , user.get("loggedIn"));
         attributes.put("clientId" , clientId);
         attributes.put("clientDomain" , clientDomain);
         return new ModelAndView(attributes, "index.ftl");
     }, new FreeMarkerEngine());
 
-    before("/login" ,  (request, response) ->
-    {
-        final String jwt = request.queryParams("token");
-        request.session().attribute("jwt" , jwt);
-        final String secret = System.getenv("AUTH0_CLIENT_SECRET");
-        final byte[] decodedSecret = Base64.getUrlDecoder().decode(secret);
-        try
-        {
-            final JWTVerifier verifier = new JWTVerifier(decodedSecret);
-            final Map<String , Object> claims = verifier.verify(jwt);
-            request.session().attribute("user" , claims);
-        }
-        catch (Exception e)
-        {
-            System.out.println("Invalid token");
-        }
-        if(request.queryParams("url") != null)
-            response.redirect("/" + request.queryParams("url"));
-        else
-            response.redirect("/build");
-    });
+    get("/build/:projectID" , (request, response) -> {
+        return getProjectPage(request , response);
+    }, new FreeMarkerEngine());
+
     get("/build" , (request , response) ->
     {
         return processBuildPage(request , response);
@@ -123,46 +80,20 @@ public class Main
       Connection connection = null;
       String newProjectName = request.queryParams("project-name"); //TODO: handle same project names
       String newProjectDesc = request.queryParams("project-description");
-      //stmt.executeUpdate("CREATE TABLE IF NOT EXISTS users (userID text, projects text[])");
       Map<String, Object> attributes = new HashMap<>();
       Map<String , Object> user;
-      String token = request.queryParams("token");
       String[] projects = new String[1];
       ArrayList<String> projectNames = new ArrayList<>();
-      if(token == null) {
-          if(request.session().attribute("token") == null)
-          {
-              attributes.put("loggedIn", false);
-              System.out.println("auth is null");
-          }
-          else
-          {
-              user = checkToken(request.session().attribute("token"));
-              if(user.containsKey("loggedIn")) {
-                  attributes.put("user", user.get("claims"));
-                  attributes.put("loggedIn", true);
-              }
-              else
-                  attributes.put("loggedIn", false);
-          }
-      }
-      else {
-          user = checkToken(token);
-          if(user.containsKey("loggedIn")) {
-              request.session().attribute("token" , token);
-              attributes.put("user", user.get("claims"));
-              attributes.put("loggedIn", true);
-          }
-          else
-              attributes.put("loggedIn", false);
-      }
-      if((Boolean) attributes.get("loggedIn"))
+      user = getUser(request);
+      if((Boolean) user.get("loggedIn"))
       {
+          attributes.put("loggedIn" , true);
+          attributes.put("user" , user.get("claims"));
           try
           {
               connection = DatabaseUrl.extract().getConnection();
               Statement stmt = connection.createStatement();
-              Map<String, Object> userInfo = (Map<String , Object>)attributes.get("user");
+              Map<String, Object> userInfo = (Map<String , Object>)user.get("claims");
               if(newProjectName != null)
               {
                   stmt.executeUpdate("CREATE TABLE IF NOT EXISTS users (userID text , userProjects text[] , CONSTRAINT user_list UNIQUE(userID))");
@@ -201,10 +132,10 @@ public class Main
               if(connection != null) try {connection.close();} catch (SQLException e) {}
           }
       }
-      //for(int i = 0; i < projects.size(); i++)
-      //{
-      //    projectHashes.add(projects.get(i).replaceAll("\\s" , "").toLowerCase());
-      //}
+      else
+      {
+          attributes.put("loggedIn" , false);
+      }
       if(projects != null) {
           System.out.println("Project ID Array:  " + projects.toString());
           System.out.println("Project NAme array: " + projectNames.toString());
@@ -216,10 +147,58 @@ public class Main
       attributes.put("projects" , projectNames);
       return new ModelAndView(attributes , "build.ftl");
   }
+
+  static ModelAndView getProjectPage(Request request , Response response)
+  {
+      String projectID = request.params(":projectID");
+      Map<String , Object> user = getUser(request);
+      Map<String, Object> attributes = new HashMap<>();
+      attributes.put("loggedIn" , user.get("loggedIn"));
+      attributes.put("clientId" , clientId);
+      attributes.put("clientDomain" , clientDomain);
+      if((Boolean) user.get("loggedIn"))
+        attributes.put("user" , user.get("claims"));
+      return new ModelAndView(attributes , "project.ftl");
+
+  }
+
   static String newID()
   {
       return new BigInteger(130 , random).toString(32);
   }
+
+  static Map<String , Object> getUser(Request request) //Returned object always contains a loggedIn key value and if that is true also contains a value with key claims of user info
+  {
+      Map<String , Object> user = new HashMap<>();
+      Map<String , Object> userInfo;
+      String token = request.queryParams("token");
+      if(token == null) {
+          if(request.session().attribute("token") == null)
+          {
+              user.put("loggedIn", false);
+              System.out.println("auth is null");
+          }
+          else
+          {
+              userInfo = checkToken(request.session().attribute("token"));
+              if(userInfo.containsKey("loggedIn"))
+                  user = userInfo;
+              else
+                  user.put("loggedIn", false);
+          }
+      }
+      else {
+          userInfo = checkToken(token);
+          if(userInfo.containsKey("loggedIn")) {
+              request.session().attribute("token" , token);
+              user = userInfo;
+          }
+          else
+              user.put("loggedIn", false);
+      }
+      return user;
+  }
+
   static Map<String , Object> checkToken(String token)
   {
       Map<String , Object> values = new HashMap<>();
